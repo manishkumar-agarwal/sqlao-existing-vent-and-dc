@@ -3,7 +3,7 @@
 	"contentVersion": "1.0.0.0",
   "parameters": {
     "sqlAlwaysOnValues": {
-      "type": "object"
+      "type": "secureObject"
     },
     "domainName": {
       "type": "string"
@@ -21,9 +21,6 @@
       "type": "string"
     },
     "sqlServerServiceAccountPassword": {
-      "type": "securestring"
-    },
-    "storageAccountType": {
       "type": "securestring"
     },
     "sqlVMSize": {
@@ -55,65 +52,55 @@
       "defaultValue": "latest"
     }
   },
-	"variables": {
-		"apiVersionStorage": "2015-06-15",
-		"sqlDiskSize": 1000,
-		"sqlWitnessDiskSize": 128,
-		"sqlNamePrefix": "[concat(parameters('namePrefix'),'-sql-')]",
-		"sqlAvailabilitySetName": "[concat(variables('sqlNamePrefix'),'as')]",
-		"sqlLBName": "[concat(variables('sqlNamePrefix'),'ilb')]",
-		"sqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqlLBName'))]",
-		"lbFE1": "[concat(variables('sqlNamePrefix'),'ilbfe1')]",
-		"lbBE": "[concat(variables('sqlNamePrefix'),'ilbbe')]",
-		"sqlLBID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqlLBName'))]",
-		"sqlLBFEConfigID1": "[concat(variables('sqllbID'),'/frontendIPConfigurations/',variables('lbFE1'))]",
-		"sqlLBBEAddressPoolID": "[concat(variables('sqllbID'),'/backendAddressPools/',variables('lbBE'))]",
-		"sqlAOProbe1": "[concat(variables('sqlNamePrefix'),'ilbp1')]",
-		"sqlLBProbeID1": "[concat(variables('sqllbID'),'/probes/',variables('sqlAOProbe1'))]",
-		"sqlStorageAccountPrefix": "[concat(parameters('namePrefix'),take(uniqueString(resourceGroup().id),8),'sql')]",
-		"sqlWitnessStorageAccountName": "[concat(parameters('namePrefix'),take(uniqueString(resourceGroup().id),8),'wit')]",
-		"vmContainerName": "vhds",
-		"deploySqlWitnessShare": "deploySqlWitnessShare",
-		"deploySqlWitnessShareId": "[concat('Microsoft.Resources/deployments/', variables('deploySqlWitnessShare'))]",
-		"deploySqlWitnessShareTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-witness.json',parameters('_artifactsLocationSasToken'))]",
-		"sqlWitnessSharePath": "[concat(parameters('namePrefix'),'-fsw')]",
-		"sqlWitnessVMName": "[concat(variables('sqlNamePrefix'),'w')]",
-		"deploySqlAlwaysOn": "deploySqlAlwaysOn",
-		"deploySqlAlwaysOnTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-alwayson.json',parameters('_artifactsLocationSasToken'))]",
-		"sqlAOEPName": "[concat(parameters('namePrefix'),'-agep')]",
-		"sqlAOAGName1": "[concat(parameters('namePrefix'),'-ag1')]",
-		"sqlAOListener1": "[concat(parameters('namePrefix'),'-agl1')]"
-	},
+  "variables": {
+    "apiVersionStorage": "2015-06-15",
+    "sqlDiskSize": 1000,
+    "sqlWitnessDiskSize": 128,
+    "sqlNamePrefix": "[concat(parameters('namePrefix'),'-sql-')]",
+    "sqlAvailabilitySetName": "[concat(variables('sqlNamePrefix'),'as')]",
+    "sqlLBName": "[concat(variables('sqlNamePrefix'),'ilb')]",
+    "sqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqlLBName'))]",
+    "lbFE1": "[concat(variables('sqlNamePrefix'),'ilbfe1')]",
+    "lbBE": "[concat(variables('sqlNamePrefix'),'ilbbe')]",
+    "sqlLBID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqlLBName'))]",
+    "sqlLBFEConfigID1": "[concat(variables('sqllbID'),'/frontendIPConfigurations/',variables('lbFE1'))]",
+    "sqlLBBEAddressPoolID": "[concat(variables('sqllbID'),'/backendAddressPools/',variables('lbBE'))]",
+    "sqlAOProbe1": "[concat(variables('sqlNamePrefix'),'ilbp1')]",
+    "sqlLBProbeID1": "[concat(variables('sqllbID'),'/probes/',variables('sqlAOProbe1'))]",
+    "sqlStorageAccountPrefix": "[parameters('sqlAlwaysOnValues').sqlStorageAccountPrefix]",
+    "sqlWitnessStorageAccountName": "[concat(parameters('namePrefix'),take(uniqueString(resourceGroup().id),8),'wit')]",
+    "vmContainerName": "vhds",
+    "deploySqlWitnessShare": "deploySqlWitnessShare",
+    "deploySqlWitnessShareId": "[concat('Microsoft.Resources/deployments/', variables('deploySqlWitnessShare'))]",
+    "deploySqlWitnessShareTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-witness.json',parameters('_artifactsLocationSasToken'))]",
+    "sqlWitnessSharePath": "[concat(parameters('namePrefix'),'-fsw')]",
+    "sqlWitnessVMName": "[concat(variables('sqlNamePrefix'),'w')]",
+    "deploySqlAlwaysOn": "deploySqlAlwaysOn",
+    "deploySqlAlwaysOnTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-alwayson.json',parameters('_artifactsLocationSasToken'))]",
+    "sqlAOEPName": "[concat(parameters('namePrefix'),'-agep')]",
+    "sqlAOListener1": "[concat(parameters('namePrefix'),'-agl1')]"
+  },
 	"resources": [
-		{
-			"type": "Microsoft.Compute/availabilitySets",
-			"name": "[variables('sqlAvailabilitySetName')]",
-			"apiVersion": "2015-06-15",
-			"location": "[resourceGroup().location]",
-			"properties": {}
-		},
-		{
-			"type": "Microsoft.Storage/storageAccounts",
-			"name": "[concat(variables('sqlStorageAccountPrefix'), copyindex())]",
-			"apiVersion": "2015-06-15",
-			"copy": {
-				"name": "storageAccountLoop",
-				"count": 2
-			},
-			"location": "[resourceGroup().location]",
-			"properties": {
-				"accountType": "[parameters('storageAccountType')]"
-			}
-		},
-		{
-			"type": "Microsoft.Storage/storageAccounts",
-			"name": "[variables('sqlWitnessStorageAccountName')]",
-			"apiVersion": "2015-06-15",
-			"location": "[resourceGroup().location]",
-			"properties": {
-				"accountType": "[parameters('storageAccountType')]"
-			}
-		},
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[parameters('sqlAlwaysOnValues').sqlServerAGName]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[concat(variables('sqlStorageAccountPrefix'), copyindex())]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "storageAccountLoop",
+        "count": "[int(parameters('sqlAlwaysOnValues').sqlStorageAccountCount)]"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "[parameters('sqlAlwaysOnValues').storageAccountType]"
+      }
+    },
 		{
 			"apiVersion": "2015-06-15",
 			"name": "[variables('sqlLBName')]",
@@ -230,11 +217,11 @@
 				"name": "virtualMachineLoop",
 				"count": 2
 			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",
-				"[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlNamePrefix'), copyindex(), '-nic'))]",
-				"[resourceId('Microsoft.Compute/availabilitySets', variables('sqlAvailabilitySetName'))]"
-			],
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",
+        "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlNamePrefix'), copyindex(), '-nic'))]",
+        "[resourceId('Microsoft.Compute/availabilitySets', variables('sqlAvailabilitySetName'))]"
+      ],
 			"properties": {
 				"hardwareProfile": {
 					"vmSize": "[parameters('SqlVMSize')]"
@@ -451,9 +438,6 @@
 					},
 					"sqlAlwaysOnEndpointName": {
 						"value": "[variables('sqlAOEPName')]"
-					},
-					"sqlAlwaysOnAvailabilityGroupName1": {
-						"value": "[variables('sqlAOAGName1')]"
 					},
 					"sqlAlwaysOnAvailabilityGroupListenerName1": {
 						"value": "[variables('sqlAOListener1')]"

@@ -30,6 +30,12 @@
         "description": "Name for the SQL Always On Availability Group, lowercase alphanumeric"
       }
     },
+    "sqlStorageAccountPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the SQL Servers Storage account prefix, lowercase alphanumeric"
+      }
+    },
     "storageAccountType": {
       "type": "string",
       "allowedValues": [
@@ -122,6 +128,13 @@
         "description": "Name for the SQL Always On Cluster, lowercase alphanumeric. This will be created in the AD"
       }
     },
+    "sqlILBName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the ILB for the SQL Server AlwaysOn to be created"
+      },
+      "defaultValue": ""
+    },
     "sqlLBIPAddress": {
       "type": "string",
       "metadata": {
@@ -149,12 +162,18 @@
     "deploySqlClusterTemplateURL": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-cluster.json',parameters('_artifactsLocationSasToken'))]",
     "deploySqlCluster": "deploySqlCluster",
     "sqlAlwaysOnValues": {
+      "domainName": "[parameters('existingDomainName')]",
+      "dnsServerName": "[parameters('existingAdPDCVMName')]",
       "sqlServerAGName": "[parameters('sqlServerAGName')]",
       "nicSubnetUri": "[variables('sqlSubnetRef')]",
       "lbSubnetUri": "[variables('sqlSubnetRef')]",
+      "sqlStorageAccountPrefix": "[parameters('sqlStorageAccountPrefix')]",
+      "sqlStorageAccountCount": 3,
+      "storageAccountType": "[parameters('storageAccountType')]",
       "sqlAlwaysOnClusterName": "[parameters('sqlAlwaysOnClusterName')]",
       "sqlAlwaysOnListenerName": "[parameters('sqlAlwaysOnListenerName')]",
-      "sqlLBIPAddress": "[parameters('sqlLBIPAddress')]"
+      "sqlLBIPAddress": "[parameters('sqlLBIPAddress')]",
+      "sqlILBName": "[parameters('sqlILBName')]"
     }
   },
   "resources": [
@@ -173,12 +192,6 @@
           "sqlAlwaysOnValues": {
             "value": "[variables('sqlAlwaysOnValues')]"
           },
-          "domainName": {
-            "value": "[parameters('existingDomainName')]"
-          },
-          "dnsServerName": {
-            "value": "[parameters('existingAdPDCVMName')]"
-          },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
@@ -190,9 +203,6 @@
           },
           "sqlServerServiceAccountPassword": {
             "value": "[parameters('sqlServerServiceAccountPassword')]"
-          },
-          "storageAccountType": {
-            "value": "[parameters('storageAccountType')]"
           },
           "sqlVMSize": {
             "value": "[parameters('sqlVMSize')]"
