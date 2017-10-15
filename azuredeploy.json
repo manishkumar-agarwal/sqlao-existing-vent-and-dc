@@ -23,11 +23,11 @@
         "description": "Name for the SQL Server VM, lowercase alphanumeric"
       }
     },
-    "sqlServerAGName": {
+    "sqlAvailabilitySetName": {
       "type": "string",
       "maxLength": 15,
       "metadata": {
-        "description": "Name for the SQL Always On Availability Group, lowercase alphanumeric"
+        "description": "Name for the SQL Always On Availability Set name, lowercase alphanumeric"
       }
     },
     "sqlStorageAccountPrefix": {
@@ -164,7 +164,7 @@
     "sqlAlwaysOnValues": {
       "domainName": "[parameters('existingDomainName')]",
       "dnsServerName": "[parameters('existingAdPDCVMName')]",
-      "sqlServerAGName": "[parameters('sqlServerAGName')]",
+      "sqlAvailabilitySetName": "[parameters('sqlAvailabilitySetName')]",
       "nicSubnetUri": "[variables('sqlSubnetRef')]",
       "lbSubnetUri": "[variables('sqlSubnetRef')]",
       "sqlStorageAccountPrefix": "[parameters('sqlStorageAccountPrefix')]",

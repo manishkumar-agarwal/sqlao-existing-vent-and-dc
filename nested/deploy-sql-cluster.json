@@ -57,16 +57,14 @@
     "sqlDiskSize": 1000,
     "sqlWitnessDiskSize": 128,
     "sqlNamePrefix": "[concat(parameters('namePrefix'),'-sql-')]",
-    "sqlAvailabilitySetName": "[concat(variables('sqlNamePrefix'),'as')]",
-    "sqlLBName": "[concat(variables('sqlNamePrefix'),'ilb')]",
-    "sqllbID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqlLBName'))]",
-    "lbFE1": "[concat(variables('sqlNamePrefix'),'ilbfe1')]",
-    "lbBE": "[concat(variables('sqlNamePrefix'),'ilbbe')]",
+    "sqlLBName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
+    "lbFE1": "[concat(variables('sqlNamePrefix'),'-FE')]",
+    "lbBE": "[concat(variables('sqlNamePrefix'),'-BE')]",
     "sqlLBID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqlLBName'))]",
-    "sqlLBFEConfigID1": "[concat(variables('sqllbID'),'/frontendIPConfigurations/',variables('lbFE1'))]",
-    "sqlLBBEAddressPoolID": "[concat(variables('sqllbID'),'/backendAddressPools/',variables('lbBE'))]",
-    "sqlAOProbe1": "[concat(variables('sqlNamePrefix'),'ilbp1')]",
-    "sqlLBProbeID1": "[concat(variables('sqllbID'),'/probes/',variables('sqlAOProbe1'))]",
+    "sqlLBFEConfigID1": "[concat(variables('sqlLBID'),'/frontendIPConfigurations/',variables('lbFE1'))]",
+    "sqlLBBEAddressPoolID": "[concat(variables('sqlLBID'),'/backendAddressPools/',variables('lbBE'))]",
+    "sqlAOProbe1": "[concat(variables('sqlLBName'),'-EndPointProbe')]",
+    "sqlLBProbeID1": "[concat(variables('sqlLBID'),'/probes/',variables('sqlAOProbe1'))]",
     "sqlStorageAccountPrefix": "[parameters('sqlAlwaysOnValues').sqlStorageAccountPrefix]",
     "sqlWitnessStorageAccountName": "[concat(parameters('namePrefix'),take(uniqueString(resourceGroup().id),8),'wit')]",
     "vmContainerName": "vhds",
@@ -77,13 +75,13 @@
     "sqlWitnessVMName": "[concat(variables('sqlNamePrefix'),'w')]",
     "deploySqlAlwaysOn": "deploySqlAlwaysOn",
     "deploySqlAlwaysOnTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-alwayson.json',parameters('_artifactsLocationSasToken'))]",
-    "sqlAOEPName": "[concat(parameters('namePrefix'),'-agep')]",
-    "sqlAOListener1": "[concat(parameters('namePrefix'),'-agl1')]"
+    "sqlAOEPName": "[concat(variables('namePrefix'),'-EndPointProbe')]",
+    "sqlAOListener1": "[concat(variables('sqlLBName'),'-EndPointListener')]"
   },
 	"resources": [
     {
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[parameters('sqlAlwaysOnValues').sqlServerAGName]",
+      "name": "[parameters('sqlAlwaysOnValues').sqlAvailabilitySetName]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "properties": {}
@@ -220,15 +218,15 @@
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",
         "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlNamePrefix'), copyindex(), '-nic'))]",
-        "[resourceId('Microsoft.Compute/availabilitySets', variables('sqlAvailabilitySetName'))]"
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
 			"properties": {
 				"hardwareProfile": {
 					"vmSize": "[parameters('SqlVMSize')]"
 				},
-				"availabilitySet": {
-					"id": "[resourceId('Microsoft.Compute/availabilitySets', variables('sqlAvailabilitySetName'))]"
-				},
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
+        },
 				"osProfile": {
 					"computerName": "[concat(variables('sqlNamePrefix'), copyindex())]",
 					"adminUsername": "[parameters('adminUsername')]",
@@ -286,18 +284,18 @@
 			"type": "Microsoft.Compute/virtualMachines",
 			"name": "[variables('sqlWitnessVMName')]",
 			"location": "[resourceGroup().location]",
-			"dependsOn": [
-				"[resourceId('Microsoft.Storage/storageAccounts',variables('sqlWitnessStorageAccountName'))]",
-				"[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlWitnessVMName'), '-nic'))]",
-				"[resourceId('Microsoft.Compute/availabilitySets', variables('sqlAvailabilitySetName'))]"
-			],
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts',variables('sqlWitnessStorageAccountName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlWitnessVMName'), '-nic'))]",
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
+      ],
 			"properties": {
 				"hardwareProfile": {
 					"vmSize": "[parameters('SqlWitnessVMSize')]"
 				},
-				"availabilitySet": {
-					"id": "[resourceId('Microsoft.Compute/availabilitySets', variables('sqlAvailabilitySetName'))]"
-				},
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
+        },
 				"osProfile": {
 					"computerName": "[variables('sqlWitnessVMName')]",
 					"adminUsername": "[parameters('adminUsername')]",
