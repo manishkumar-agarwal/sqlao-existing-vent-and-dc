@@ -23,6 +23,13 @@
         "description": "Name for the SQL Server VM, lowercase alphanumeric"
       }
     },
+    "sqlServerAGName": {
+      "type": "string",
+      "maxLength": 15,
+      "metadata": {
+        "description": "Name for the SQL Always On Availability Group, lowercase alphanumeric"
+      }
+    },
     "storageAccountType": {
       "type": "string",
       "allowedValues": [
@@ -140,7 +147,15 @@
   "variables": {
     "sqlSubnetRef": "[concat(parameters('existingVirtualNetworkId'),'/subnets/',parameters('existingSqlSubnetName'))]",
     "deploySqlClusterTemplateURL": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-cluster.json',parameters('_artifactsLocationSasToken'))]",
-    "deploySqlCluster": "deploySqlCluster"
+    "deploySqlCluster": "deploySqlCluster",
+    "sqlAlwaysOnValues": {
+      "sqlServerAGName": "[parameters('sqlServerAGName')]",
+      "nicSubnetUri": "[variables('sqlSubnetRef')]",
+      "lbSubnetUri": "[variables('sqlSubnetRef')]",
+      "sqlAlwaysOnClusterName": "[parameters('sqlAlwaysOnClusterName')]",
+      "sqlAlwaysOnListenerName": "[parameters('sqlAlwaysOnListenerName')]",
+      "sqlLBIPAddress": "[parameters('sqlLBIPAddress')]"
+    }
   },
   "resources": [
     {
@@ -155,8 +170,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "namePrefix": {
-            "value": "[parameters('namePrefix')]"
+          "sqlAlwaysOnValues": {
+            "value": "[variables('sqlAlwaysOnValues')]"
           },
           "domainName": {
             "value": "[parameters('existingDomainName')]"
@@ -178,15 +193,6 @@
           },
           "storageAccountType": {
             "value": "[parameters('storageAccountType')]"
-          },
-          "nicSubnetUri": {
-            "value": "[variables('sqlSubnetRef')]"
-          },
-          "lbSubnetUri": {
-            "value": "[variables('sqlSubnetRef')]"
-          },
-          "sqlLBIPAddress": {
-            "value": "[parameters('sqlLBIPAddress')]"
           },
           "sqlVMSize": {
             "value": "[parameters('sqlVMSize')]"

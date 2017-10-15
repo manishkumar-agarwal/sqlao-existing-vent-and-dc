@@ -1,69 +1,60 @@
 {
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"namePrefix": {
-			"type": "string"
-		},
-		"domainName": {
-			"type": "string"
-		},
-		"dnsServerName": {
-			"type": "string"
-		},
-		"adminUsername": {
-			"type": "string"
-		},
-		"adminPassword": {
-			"type": "securestring"
-		},
-		"sqlServerServiceAccountUserName": {
-			"type": "string"
-		},
-		"sqlServerServiceAccountPassword": {
-			"type": "securestring"
-		},
-		"storageAccountType": {
-			"type": "securestring"
-		},
-		"nicSubnetUri": {
-			"type": "string"
-		},
-		"lbSubnetUri": {
-			"type": "string"
-		},
-		"sqlLBIPAddress": {
-			"type": "string"
-		},
-		"sqlVMSize": {
-			"type": "string"
-		},
-		"sqlWitnessVMSize": {
-			"type": "string"
-		},
-		"_artifactsLocation": {
-			"type": "string"
-		},
-		"_artifactsLocationSasToken": {
-			"type": "string"
-		},
-		"windowsImagePublisher": {
-			"type": "string",
-			"defaultValue": "MicrosoftSQLServer"
-		},
-		"windowsImageOffer": {
-			"type": "string",
-			"defaultValue": "SQL2014SP2-WS2012R2"
-		},
-		"windowsImageSKU": {
-			"type": "string",
-			"defaultValue": "Enterprise"
-		},
-		"windowsImageVersion": {
-			"type": "string",
-			"defaultValue": "latest"
-		}
-	},
+  "parameters": {
+    "sqlAlwaysOnValues": {
+      "type": "object"
+    },
+    "domainName": {
+      "type": "string"
+    },
+    "dnsServerName": {
+      "type": "string"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "sqlServerServiceAccountUserName": {
+      "type": "string"
+    },
+    "sqlServerServiceAccountPassword": {
+      "type": "securestring"
+    },
+    "storageAccountType": {
+      "type": "securestring"
+    },
+    "sqlVMSize": {
+      "type": "string"
+    },
+    "sqlWitnessVMSize": {
+      "type": "string"
+    },
+    "_artifactsLocation": {
+      "type": "string"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "string"
+    },
+    "windowsImagePublisher": {
+      "type": "string",
+      "defaultValue": "MicrosoftSQLServer"
+    },
+    "windowsImageOffer": {
+      "type": "string",
+      "defaultValue": "SQL2014SP2-WS2012R2"
+    },
+    "windowsImageSKU": {
+      "type": "string",
+      "defaultValue": "Enterprise"
+    },
+    "windowsImageVersion": {
+      "type": "string",
+      "defaultValue": "latest"
+    }
+  },
 	"variables": {
 		"apiVersionStorage": "2015-06-15",
 		"sqlDiskSize": 1000,
@@ -133,13 +124,13 @@
 				"frontendIPConfigurations": [
 					{
 						"name": "[variables('lbFE1')]",
-						"properties": {
-							"privateIPAllocationMethod": "Static",
-							"privateIPAddress": "[parameters('sqlLBIPAddress')]",
-							"subnet": {
-								"id": "[parameters('lbSubnetUri')]"
-							}
-						}
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]",
+              "subnet": {
+                "id": "[parameters('sqlAlwaysOnValues').lbSubnetUri]"
+              }
+            }
 					}
 				],
 				"backendAddressPools": [
@@ -198,9 +189,9 @@
 						"name": "ipconfig1",
 						"properties": {
 							"privateIPAllocationMethod": "Dynamic",
-							"subnet": {
-								"id": "[parameters('nicSubnetUri')]"
-							},
+              "subnet": {
+                "id": "[parameters('sqlAlwaysOnValues').nicSubnetUri]"
+              },
 							"loadBalancerBackendAddressPools": [
 								{
 									"id": "[variables('sqlLBBEAddressPoolID')]"
@@ -222,9 +213,9 @@
 						"name": "ipconfig1",
 						"properties": {
 							"privateIPAllocationMethod": "Dynamic",
-							"subnet": {
-								"id": "[parameters('nicSubnetUri')]"
-							}
+              "subnet": {
+                "id": "[parameters('sqlAlwaysOnValues').nicSubnetUri]"
+              }
 						}
 					}
 				]
@@ -434,9 +425,9 @@
 					"sqlLBName": {
 						"value": "[variables('sqlLBName')]"
 					},
-					"sqlLBIPAddress": {
-						"value": "[parameters('sqlLBIPAddress')]"
-					},
+          "sqlLBIPAddress": {
+            "value": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]"
+          },
 					"dnsServerName": {
 						"value": "[parameters('dnsServerName')]"
 					},
