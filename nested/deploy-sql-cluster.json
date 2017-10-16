@@ -17,12 +17,6 @@
     "sqlServerServiceAccountPassword": {
       "type": "securestring"
     },
-    "sqlVMSize": {
-      "type": "string"
-    },
-    "sqlWitnessVMSize": {
-      "type": "string"
-    },
     "_artifactsLocation": {
       "type": "string"
     },
@@ -218,7 +212,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('SqlVMSize')]"
+          "vmSize": "[parameters('sqlAlwaysOnValues').sqlVMSize]"
         },
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
@@ -286,9 +280,9 @@
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
 			"properties": {
-				"hardwareProfile": {
-					"vmSize": "[parameters('SqlWitnessVMSize')]"
-				},
+        "hardwareProfile": {
+          "vmSize": "[parameters('sqlAlwaysOnValues').sqlWitnessVMSize]"
+        },
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
         },
@@ -388,6 +382,9 @@
 					"contentVersion": "1.0.0.0"
 				},
         "parameters": {
+          "sqlAlwaysOnValues": {
+            "value": "[parameters('sqlAlwaysOnValues')]"
+          },
           "sqlNamePrefix": {
             "value": "[variables('sqlNamePrefix')]"
           },

@@ -2,6 +2,9 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "sqlAlwaysOnValues": {
+      "type": "secureObject"
+    },
     "sqlNamePrefix": {
       "type": "string"
     },
@@ -58,8 +61,7 @@
     "sqlAOPrepareModulesURL": "[concat(parameters('_artifactsLocation'),'/dsc/prepare-sql-alwayson-server.ps1.zip',parameters('_artifactsLocationSasToken'))]",
     "sqlAOPrepareConfigurationFunction": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
     "createClusterModulesURL": "[concat(parameters('_artifactsLocation'),'/dsc/create-failover-cluster.ps1.zip',parameters('_artifactsLocationSasToken'))]",
-    "createClusterConfigurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
-    "clusterName": "[concat(parameters('namePrefix'),'-c')]"
+    "createClusterConfigurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster"
   },
   "resources": [
     {
@@ -117,7 +119,7 @@
           "configurationFunction": "[variables('createClusterConfigurationFunction')]",
           "properties": {
             "domainName": "[parameters('domainName')]",
-            "clusterName": "[variables('clusterName')]",
+            "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
             "sharePath": "[concat('\\\\',parameters('sqlWitnessVMName'),'\\',parameters('sharePath'))]",
             "nodes": [
               "[concat(parameters('sqlNamePrefix'),'0')]",

@@ -175,10 +175,12 @@
       "sqlLBIPAddress": "[parameters('sqlLBIPAddress')]",
       "sqlILBName": "[parameters('sqlILBName')]",
       "sqlWitnessVMName": "[parameters('sqlWitnessShareVMName')]",
+      "sqlWitnessVMSize": "[parameters('sqlWitnessVMSize')]",
       "sqlServerVMNames": [
         "[parameters('sqlServerVM1Name')]",
         "[parameters('sqlServerVM2Name')]"
-      ]
+      ],
+      "sqlVMSize": "[parameters('sqlVMSize')]"
     }
   },
   "resources": [
@@ -208,12 +210,6 @@
           },
           "sqlServerServiceAccountPassword": {
             "value": "[parameters('sqlServerServiceAccountPassword')]"
-          },
-          "sqlVMSize": {
-            "value": "[parameters('sqlVMSize')]"
-          },
-          "sqlWitnessVMSize": {
-            "value": "[parameters('sqlWitnessVMSize')]"
           },
           "_artifactsLocation": {
             "value": "[parameters('_artifactsLocation')]"
