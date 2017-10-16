@@ -14,12 +14,6 @@
     "namePrefix": {
       "type": "string"
     },
-    "sharePath": {
-      "type": "string"
-    },
-    "sqlWitnessVMName": {
-      "type": "string"
-    },
     "sqlLBName": {
       "type": "string"
     },
@@ -120,7 +114,7 @@
           "properties": {
             "domainName": "[parameters('domainName')]",
             "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
-            "sharePath": "[concat('\\\\',parameters('sqlWitnessVMName'),'\\',parameters('sharePath'))]",
+            "sharePath": "[concat('\\\\',parameters('sqlAlwaysOnValues').sqlWitnessVMName,'\\',parameters('sqlAlwaysOnValues').sqlWitnessSharePath)]",
             "nodes": [
               "[concat(parameters('sqlNamePrefix'),'0')]",
               "[concat(parameters('sqlNamePrefix'),'1')]"

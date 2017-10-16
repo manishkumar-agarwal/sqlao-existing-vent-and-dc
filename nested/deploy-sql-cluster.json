@@ -61,7 +61,6 @@
     "deploySqlWitnessShare": "deploySqlWitnessShare",
     "deploySqlWitnessShareId": "[concat('Microsoft.Resources/deployments/', variables('deploySqlWitnessShare'))]",
     "deploySqlWitnessShareTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-witness.json',parameters('_artifactsLocationSasToken'))]",
-    "sqlWitnessSharePath": "sqlao-fsw",
     "sqlWitnessVMName": "[parameters('sqlAlwaysOnValues').sqlWitnessVMName]",
     "deploySqlAlwaysOn": "deploySqlAlwaysOn",
     "deploySqlAlwaysOnTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-alwayson.json',parameters('_artifactsLocationSasToken'))]",
@@ -348,9 +347,9 @@
           "domainName": {
             "value": "[parameters('sqlAlwaysOnValues').domainName]"
           },
-					"sharePath": {
-						"value": "[variables('sqlWitnessSharePath')]"
-					},
+          "sharePath": {
+            "value": "[parameters('sqlAlwaysOnValues').sqlWitnessSharePath]"
+          },
 					"adminUsername": {
 						"value": "[parameters('adminUsername')]"
 					},
@@ -393,12 +392,6 @@
           },
           "namePrefix": {
             "value": "[variables('namePrefix')]"
-          },
-          "sharePath": {
-            "value": "[variables('sqlWitnessSharePath')]"
-          },
-          "sqlWitnessVMName": {
-            "value": "[variables('sqlWitnessVMName')]"
           },
           "sqlLBName": {
             "value": "[variables('sqlLBName')]"

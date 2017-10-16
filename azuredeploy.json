@@ -176,6 +176,7 @@
       "sqlILBName": "[parameters('sqlILBName')]",
       "sqlWitnessVMName": "[parameters('sqlWitnessShareVMName')]",
       "sqlWitnessVMSize": "[parameters('sqlWitnessVMSize')]",
+      "sqlWitnessSharePath": "sqlao-fsw",
       "sqlServerVMNames": [
         "[parameters('sqlServerVM1Name')]",
         "[parameters('sqlServerVM2Name')]"
