@@ -57,7 +57,7 @@
   "resources": [
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('sqlNamePrefix'),'0/sqlAOPrepare')]",
+      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[0],'/sqlAOPrepare')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [],
