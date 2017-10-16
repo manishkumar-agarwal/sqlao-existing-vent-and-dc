@@ -173,7 +173,12 @@
       "sqlAlwaysOnClusterName": "[parameters('sqlAlwaysOnClusterName')]",
       "sqlAlwaysOnListenerName": "[parameters('sqlAlwaysOnListenerName')]",
       "sqlLBIPAddress": "[parameters('sqlLBIPAddress')]",
-      "sqlILBName": "[parameters('sqlILBName')]"
+      "sqlILBName": "[parameters('sqlILBName')]",
+      "sqlWitnessVMName": "[parameters('sqlWitnessShareVMName')]",
+      "sqlServerVMNames": [
+        "[parameters('sqlServerVM1Name')]",
+        "[parameters('sqlServerVM2Name')]"
+      ]
     }
   },
   "resources": [

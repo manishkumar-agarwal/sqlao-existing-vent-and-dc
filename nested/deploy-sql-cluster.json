@@ -5,12 +5,6 @@
     "sqlAlwaysOnValues": {
       "type": "secureObject"
     },
-    "domainName": {
-      "type": "string"
-    },
-    "dnsServerName": {
-      "type": "string"
-    },
     "adminUsername": {
       "type": "string"
     },
@@ -53,10 +47,11 @@
     }
   },
   "variables": {
+    "namePrefix": "Tempprefix",
     "apiVersionStorage": "2015-06-15",
     "sqlDiskSize": 1000,
     "sqlWitnessDiskSize": 128,
-    "sqlNamePrefix": "[concat(parameters('namePrefix'),'-sql-')]",
+    "sqlNamePrefix": "[concat(variables('namePrefix'),'-sql-')]",
     "sqlLBName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
     "lbFE1": "[concat(variables('sqlNamePrefix'),'-FE')]",
     "lbBE": "[concat(variables('sqlNamePrefix'),'-BE')]",
@@ -66,13 +61,14 @@
     "sqlAOProbe1": "[concat(variables('sqlLBName'),'-EndPointProbe')]",
     "sqlLBProbeID1": "[concat(variables('sqlLBID'),'/probes/',variables('sqlAOProbe1'))]",
     "sqlStorageAccountPrefix": "[parameters('sqlAlwaysOnValues').sqlStorageAccountPrefix]",
-    "sqlWitnessStorageAccountName": "[concat(parameters('namePrefix'),take(uniqueString(resourceGroup().id),8),'wit')]",
+    "sqlWitnessStorageAccountNumber": "[sub(parameters('sqlAlwaysOnValues').sqlStorageAccountCount,1)]",
+    "sqlWitnessStorageAccountName": "[concat(variables('sqlStorageAccountPrefix'),variables('sqlWitnessStorageAccountNumber'))]",
     "vmContainerName": "vhds",
     "deploySqlWitnessShare": "deploySqlWitnessShare",
     "deploySqlWitnessShareId": "[concat('Microsoft.Resources/deployments/', variables('deploySqlWitnessShare'))]",
     "deploySqlWitnessShareTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-witness.json',parameters('_artifactsLocationSasToken'))]",
-    "sqlWitnessSharePath": "[concat(parameters('namePrefix'),'-fsw')]",
-    "sqlWitnessVMName": "[concat(variables('sqlNamePrefix'),'w')]",
+    "sqlWitnessSharePath": "sqlao-fsw",
+    "sqlWitnessVMName": "[parameters('sqlAlwaysOnValues').sqlWitnessVMName]",
     "deploySqlAlwaysOn": "deploySqlAlwaysOn",
     "deploySqlAlwaysOnTemplateUrl": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-alwayson.json',parameters('_artifactsLocationSasToken'))]",
     "sqlAOEPName": "[concat(variables('namePrefix'),'-EndPointProbe')]",
@@ -156,37 +152,37 @@
 				]
 			}
 		},
-		{
-			"name": "[concat(variables('sqlNamePrefix'), copyindex(), '-nic')]",
-			"type": "Microsoft.Network/networkInterfaces",
-			"location": "[resourceGroup().location]",
-			"apiVersion": "2015-06-15",
-			"copy": {
-				"name": "nicLoop",
-				"count": 2
-			},
-			"dependsOn": [
-				"[variables('sqlLBID')]"
-			],
-			"properties": {
-				"ipConfigurations": [
-					{
-						"name": "ipconfig1",
-						"properties": {
-							"privateIPAllocationMethod": "Dynamic",
+    {
+      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-nic')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[length(parameters('sqlAlwaysOnValues').sqlServerVMNames)]"
+      },
+      "dependsOn": [
+        "[variables('sqlLBID')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[parameters('sqlAlwaysOnValues').nicSubnetUri]"
               },
-							"loadBalancerBackendAddressPools": [
-								{
-									"id": "[variables('sqlLBBEAddressPoolID')]"
-								}
-							]
-						}
-					}
-				]
-			}
-		},
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('sqlLBBEAddressPoolID')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
 		{
 			"name": "[concat(variables('sqlWitnessVMName'), '-nic')]",
 			"type": "Microsoft.Network/networkInterfaces",
@@ -206,79 +202,79 @@
 				]
 			}
 		},
-		{
-			"apiVersion": "2015-06-15",
-			"type": "Microsoft.Compute/virtualMachines",
-			"name": "[concat(variables('sqlNamePrefix'), copyindex())]",
-			"location": "[resourceGroup().location]",
-			"copy": {
-				"name": "virtualMachineLoop",
-				"count": 2
-			},
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[copyIndex()]]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "virtualMachineLoop",
+        "count": "[length(parameters('sqlAlwaysOnValues').sqlServerVMNames)]"
+      },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",
-        "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlNamePrefix'), copyindex(), '-nic'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-nic'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
-			"properties": {
-				"hardwareProfile": {
-					"vmSize": "[parameters('SqlVMSize')]"
-				},
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('SqlVMSize')]"
+        },
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
         },
-				"osProfile": {
-					"computerName": "[concat(variables('sqlNamePrefix'), copyindex())]",
-					"adminUsername": "[parameters('adminUsername')]",
-					"adminPassword": "[parameters('adminPassword')]"
-				},
-				"storageProfile": {
-					"imageReference": {
-						"publisher": "[parameters('windowsImagePublisher')]",
-						"offer": "[parameters('windowsImageOffer')]",
-						"sku": "[parameters('windowsImageSKU')]",
-						"version": "[parameters('windowsImageVersion')]"
-					},
-					"osDisk": {
-						"name": "[concat(variables('sqlNamePrefix'), copyindex(), '-osdisk.vhd')]",
-						"vhd": {
-							"uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', variables('sqlNamePrefix'), copyindex(), '-osdisk.vhd')]"
-						},
-						"caching": "ReadWrite",
-						"createOption": "FromImage"
-					},
-					"dataDisks": [
-						{
-							"vhd": {
-								"uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', variables('sqlNamePrefix'), copyindex(), '-datadisk1.vhd')]"
-							},
-							"name": "[concat(variables('sqlNamePrefix'), copyindex(), '-datadisk1.vhd')]",
-							"caching": "None",
-							"createOption": "Empty",
-							"diskSizeGB": "[variables('sqlDiskSize')]",
-							"lun": 0
-						},
-						{
-							"vhd": {
-								"uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', variables('sqlNamePrefix'), copyindex(), '-logdisk1.vhd')]"
-							},
-							"name": "[concat(variables('sqlNamePrefix'), copyindex(), '-logdisk1.vhd')]",
-							"caching": "None",
-							"createOption": "Empty",
-							"diskSizeGB": "[variables('sqlDiskSize')]",
-							"lun": 1
-						}
-					]
-				},
-				"networkProfile": {
-					"networkInterfaces": [
-						{
-							"id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlNamePrefix'), copyindex(), '-nic'))]"
-						}
-					]
-				}
-			}
-		},
+        "osProfile": {
+          "computerName": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()]]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('windowsImagePublisher')]",
+            "offer": "[parameters('windowsImageOffer')]",
+            "sku": "[parameters('windowsImageSKU')]",
+            "version": "[parameters('windowsImageVersion')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-osdisk.vhd')]",
+            "vhd": {
+              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-datadisk1.vhd')]"
+              },
+              "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-datadisk1.vhd')]",
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "[variables('sqlDiskSize')]",
+              "lun": 0
+            },
+            {
+              "vhd": {
+                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-logdisk1.vhd')]"
+              },
+              "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-logdisk1.vhd')]",
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "[variables('sqlDiskSize')]",
+              "lun": 1
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-nic'))]"
+            }
+          ]
+        }
+      }
+    },
 		{
 			"apiVersion": "2015-06-15",
 			"type": "Microsoft.Compute/virtualMachines",
@@ -355,9 +351,9 @@
 					"sqlWitnessVMName": {
 						"value": "[variables('sqlWitnessVMName')]"
 					},
-					"domainName": {
-						"value": "[parameters('domainName')]"
-					},
+          "domainName": {
+            "value": "[parameters('sqlAlwaysOnValues').domainName]"
+          },
 					"sharePath": {
 						"value": "[variables('sqlWitnessSharePath')]"
 					},
@@ -380,67 +376,70 @@
 			"name": "[variables('deploySqlAlwaysOn')]",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "2015-01-01",
-			"dependsOn": [
-				"[resourceId('Microsoft.Compute/virtualMachines',concat(variables('sqlNamePrefix'),'0'))]",
-				"[resourceId('Microsoft.Compute/virtualMachines',concat(variables('sqlNamePrefix'),'1'))]",
-				"[variables('deploySqlWitnessShareId')]"
-			],
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines',parameters('sqlAlwaysOnValues').sqlServerVMNames[0])]",
+        "[resourceId('Microsoft.Compute/virtualMachines',parameters('sqlAlwaysOnValues').sqlServerVMNames[1])]",
+        "[variables('deploySqlWitnessShareId')]"
+      ],
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
 					"uri": "[variables('deploySqlAlwaysOnTemplateUrl')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": {
-					"sqlNamePrefix": {
-						"value": "[variables('sqlNamePrefix')]"
-					},
-					"domainName": {
-						"value": "[parameters('domainName')]"
-					},
-					"namePrefix": {
-						"value": "[parameters('namePrefix')]"
-					},
-					"sharePath": {
-						"value": "[variables('sqlWitnessSharePath')]"
-					},
-					"sqlWitnessVMName": {
-						"value": "[variables('sqlWitnessVMName')]"
-					},
-					"sqlLBName": {
-						"value": "[variables('sqlLBName')]"
-					},
+        "parameters": {
+          "sqlNamePrefix": {
+            "value": "[variables('sqlNamePrefix')]"
+          },
+          "domainName": {
+            "value": "[parameters('sqlAlwaysOnValues').domainName]"
+          },
+          "namePrefix": {
+            "value": "[variables('namePrefix')]"
+          },
+          "sharePath": {
+            "value": "[variables('sqlWitnessSharePath')]"
+          },
+          "sqlWitnessVMName": {
+            "value": "[variables('sqlWitnessVMName')]"
+          },
+          "sqlLBName": {
+            "value": "[variables('sqlLBName')]"
+          },
           "sqlLBIPAddress": {
             "value": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]"
           },
-					"dnsServerName": {
-						"value": "[parameters('dnsServerName')]"
-					},
-					"sqlServerServiceAccountUserName": {
-						"value": "[parameters('sqlServerServiceAccountUserName')]"
-					},
-					"sqlServerServiceAccountPassword": {
-						"value": "[parameters('sqlServerServiceAccountPassword')]"
-					},
-					"adminUsername": {
-						"value": "[parameters('adminUsername')]"
-					},
-					"adminPassword": {
-						"value": "[parameters('adminPassword')]"
-					},
-					"_artifactsLocation": {
-						"value": "[parameters('_artifactsLocation')]"
-					},
-					"_artifactsLocationSasToken": {
-						"value": "[parameters('_artifactsLocationSasToken')]"
-					},
-					"sqlAlwaysOnEndpointName": {
-						"value": "[variables('sqlAOEPName')]"
-					},
-					"sqlAlwaysOnAvailabilityGroupListenerName1": {
-						"value": "[variables('sqlAOListener1')]"
-					}
-				}
+          "dnsServerName": {
+            "value": "[parameters('sqlAlwaysOnValues').dnsServerName]"
+          },
+          "sqlServerServiceAccountUserName": {
+            "value": "[parameters('sqlServerServiceAccountUserName')]"
+          },
+          "sqlServerServiceAccountPassword": {
+            "value": "[parameters('sqlServerServiceAccountPassword')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "sqlAlwaysOnEndpointName": {
+            "value": "[variables('sqlAOEPName')]"
+          },
+          "sqlAlwaysOnAvailabilityGroupListenerName1": {
+            "value": "[variables('sqlAOListener1')]"
+          },
+          "sqlAlwaysOnAvailabilityGroupName1": {
+            "value": "SQL-AAG1"
+          }
+        }
 			}
 		}
 	],
