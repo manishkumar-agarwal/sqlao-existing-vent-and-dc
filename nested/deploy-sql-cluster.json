@@ -387,9 +387,6 @@
           "sqlNamePrefix": {
             "value": "[variables('sqlNamePrefix')]"
           },
-          "domainName": {
-            "value": "[parameters('sqlAlwaysOnValues').domainName]"
-          },
           "namePrefix": {
             "value": "[variables('namePrefix')]"
           },

@@ -8,9 +8,6 @@
     "sqlNamePrefix": {
       "type": "string"
     },
-    "domainName": {
-      "type": "string"
-    },
     "namePrefix": {
       "type": "string"
     },
@@ -74,7 +71,7 @@
           "modulesUrl": "[variables('sqlAOPrepareModulesURL')]",
           "configurationFunction": "[variables('sqlAOPrepareConfigurationFunction')]",
           "properties": {
-            "domainName": "[parameters('domainName')]",
+            "domainName": "[parameters('sqlAlwaysOnValues').domainName]",
             "sqlAlwaysOnEndpointName": "[parameters('sqlAlwaysOnEndpointName')]",
             "adminCreds": {
               "userName": "[parameters('adminUsername')]",
@@ -112,7 +109,7 @@
           "modulesUrl": "[variables('createClusterModulesURL')]",
           "configurationFunction": "[variables('createClusterConfigurationFunction')]",
           "properties": {
-            "domainName": "[parameters('domainName')]",
+            "domainName": "[parameters('sqlAlwaysOnValues').domainName]",
             "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
             "sharePath": "[concat('\\\\',parameters('sqlAlwaysOnValues').sqlWitnessVMName,'\\',parameters('sqlAlwaysOnValues').sqlWitnessSharePath)]",
             "nodes": [
