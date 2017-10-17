@@ -96,7 +96,7 @@
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/',parameters('sqlNamePrefix'),'0/extensions/sqlAOPrepare')]"
+        "[concat('Microsoft.Compute/virtualMachines/',parameters('sqlAlwaysOnValues').sqlServerVMNames[0],'/extensions/sqlAOPrepare')]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
