@@ -72,7 +72,6 @@
           "configurationFunction": "[variables('sqlAOPrepareConfigurationFunction')]",
           "properties": {
             "domainName": "[parameters('sqlAlwaysOnValues').domainName]",
-            "sqlAlwaysOnEndpointName": "[parameters('sqlAlwaysOnEndpointName')]",
             "adminCreds": {
               "userName": "[parameters('adminUsername')]",
               "password": "PrivateSettingsRef:adminPassword"
