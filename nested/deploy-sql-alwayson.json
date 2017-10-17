@@ -14,9 +14,6 @@
     "sqlLBIPAddress": {
       "type": "string"
     },
-    "dnsServerName": {
-      "type": "string"
-    },
     "sqlServerServiceAccountUserName": {
       "type": "string"
     },
@@ -117,7 +114,7 @@
             "lbAddress": "[parameters('sqlLBIPAddress')]",
             "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1])]",
             "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0])]",
-            "dnsServerName": "[parameters('dnsServerName')]",
+            "dnsServerName": "[parameters('sqlAlwaysOnValues').dnsServerName]",
             "adminCreds": {
               "userName": "[parameters('adminUsername')]",
               "password": "PrivateSettingsRef:adminPassword"
