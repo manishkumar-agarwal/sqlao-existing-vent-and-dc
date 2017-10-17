@@ -45,7 +45,6 @@
     "apiVersionStorage": "2015-06-15",
     "sqlDiskSize": 1000,
     "sqlWitnessDiskSize": 128,
-    "sqlNamePrefix": "[concat(variables('namePrefix'),'-sql-')]",
     "sqlLBName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
     "lbFE1": "[concat(variables('sqlLBName'),'-FrontEnd')]",
     "lbBE": "[concat(variables('sqlLBName'),'-BackEnd')]",
@@ -383,9 +382,6 @@
         "parameters": {
           "sqlAlwaysOnValues": {
             "value": "[parameters('sqlAlwaysOnValues')]"
-          },
-          "sqlNamePrefix": {
-            "value": "[variables('sqlNamePrefix')]"
           },
           "namePrefix": {
             "value": "[variables('namePrefix')]"

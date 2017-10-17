@@ -5,9 +5,6 @@
     "sqlAlwaysOnValues": {
       "type": "secureObject"
     },
-    "sqlNamePrefix": {
-      "type": "string"
-    },
     "namePrefix": {
       "type": "string"
     },
@@ -92,7 +89,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('sqlNamePrefix'),'1/CreateCluster')]",
+      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/CreateCluster')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -111,18 +108,15 @@
             "domainName": "[parameters('sqlAlwaysOnValues').domainName]",
             "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
             "sharePath": "[concat('\\\\',parameters('sqlAlwaysOnValues').sqlWitnessVMName,'\\',parameters('sqlAlwaysOnValues').sqlWitnessSharePath)]",
-            "nodes": [
-              "[concat(parameters('sqlNamePrefix'),'0')]",
-              "[concat(parameters('sqlNamePrefix'),'1')]"
-            ],
+            "nodes": "[parameters('sqlAlwaysOnValues').sqlServerVMNames]",
             "sqlAlwaysOnEndpointName": "[parameters('sqlAlwaysOnEndpointName')]",
             "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAlwaysOnAvailabilityGroupName1')]",
             "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAlwaysOnAvailabilityGroupListenerName1')]",
             "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
             "lbName": "[parameters('sqlLBName')]",
             "lbAddress": "[parameters('sqlLBIPAddress')]",
-            "primaryReplica": "[concat(parameters('sqlNamePrefix'),'1')]",
-            "secondaryReplica": "[concat(parameters('sqlNamePrefix'),'0')]",
+            "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1])]",
+            "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0])]",
             "dnsServerName": "[parameters('dnsServerName')]",
             "adminCreds": {
               "userName": "[parameters('adminUsername')]",
