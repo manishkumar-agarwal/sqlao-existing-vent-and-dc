@@ -11,12 +11,6 @@
     "adminPassword": {
       "type": "securestring"
     },
-    "sqlServerServiceAccountUserName": {
-      "type": "string"
-    },
-    "sqlServerServiceAccountPassword": {
-      "type": "securestring"
-    },
     "_artifactsLocation": {
       "type": "string"
     },
@@ -380,12 +374,6 @@
         "parameters": {
           "sqlAlwaysOnValues": {
             "value": "[parameters('sqlAlwaysOnValues')]"
-          },
-          "sqlServerServiceAccountUserName": {
-            "value": "[parameters('sqlServerServiceAccountUserName')]"
-          },
-          "sqlServerServiceAccountPassword": {
-            "value": "[parameters('sqlServerServiceAccountPassword')]"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"

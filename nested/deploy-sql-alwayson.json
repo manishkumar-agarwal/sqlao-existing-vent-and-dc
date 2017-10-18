@@ -5,12 +5,6 @@
     "sqlAlwaysOnValues": {
       "type": "secureObject"
     },
-    "sqlServerServiceAccountUserName": {
-      "type": "string"
-    },
-    "sqlServerServiceAccountPassword": {
-      "type": "securestring"
-    },
     "adminUsername": {
       "type": "string"
     },
@@ -53,7 +47,7 @@
               "password": "PrivateSettingsRef:adminPassword"
             },
             "sqlServiceCreds": {
-              "userName": "[parameters('sqlServerServiceAccountUserName')]",
+              "userName": "[parameters('sqlAlwaysOnValues').sqlServerServiceAccountUserName]",
               "password": "PrivateSettingsRef:sqlServerServiceAccountPassword"
             }
           }
@@ -61,7 +55,7 @@
         "protectedSettings": {
           "items": {
             "adminPassword": "[parameters('adminPassword')]",
-            "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]"
+            "sqlServerServiceAccountPassword": "[parameters('sqlAlwaysOnValues').sqlServerServiceAccountPassword]"
           }
         }
       }
@@ -102,7 +96,7 @@
               "password": "PrivateSettingsRef:adminPassword"
             },
             "sqlServiceCreds": {
-              "userName": "[parameters('sqlServerServiceAccountUserName')]",
+              "userName": "[parameters('sqlAlwaysOnValues').sqlServerServiceAccountUserName]",
               "password": "PrivateSettingsRef:sqlServerServiceAccountPassword"
             }
           }
@@ -110,7 +104,7 @@
         "protectedSettings": {
           "items": {
             "adminPassword": "[parameters('adminPassword')]",
-            "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]"
+            "sqlServerServiceAccountPassword": "[parameters('sqlAlwaysOnValues').sqlServerServiceAccountPassword]"
           }
         }
       }

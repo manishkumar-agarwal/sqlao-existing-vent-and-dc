@@ -182,7 +182,9 @@
         "[parameters('sqlServerVM2Name')]"
       ],
       "sqlVMSize": "[parameters('sqlVMSize')]",
-      "sqlAlwaysOnAvailabilityGroupName": "SQL-OP-AG"
+      "sqlAlwaysOnAvailabilityGroupName": "SQL-OP-AG",
+      "sqlServerServiceAccountUserName": "[parameters('sqlServerServiceAccountUserName')]",
+      "sqlServerServiceAccountPassword" : "[parameters('sqlServerServiceAccountPassword')]"
     }
   },
   "resources": [
