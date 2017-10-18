@@ -5,12 +5,6 @@
     "sqlAlwaysOnValues": {
       "type": "secureObject"
     },
-    "sqlLBName": {
-      "type": "string"
-    },
-    "sqlLBIPAddress": {
-      "type": "string"
-    },
     "sqlServerServiceAccountUserName": {
       "type": "string"
     },
@@ -98,8 +92,8 @@
             "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName]",
             "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnListenerName]",
             "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
-            "lbName": "[parameters('sqlLBName')]",
-            "lbAddress": "[parameters('sqlLBIPAddress')]",
+            "lbName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
+            "lbAddress": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]",
             "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1])]",
             "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0])]",
             "dnsServerName": "[parameters('sqlAlwaysOnValues').dnsServerName]",

@@ -381,12 +381,6 @@
           "sqlAlwaysOnValues": {
             "value": "[parameters('sqlAlwaysOnValues')]"
           },
-          "sqlLBName": {
-            "value": "[variables('sqlLBName')]"
-          },
-          "sqlLBIPAddress": {
-            "value": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]"
-          },
           "sqlServerServiceAccountUserName": {
             "value": "[parameters('sqlServerServiceAccountUserName')]"
           },
