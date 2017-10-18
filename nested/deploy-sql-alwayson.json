@@ -62,7 +62,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat('manish-sqlvm2','/CreateCluster')]",
+      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/CreateCluster')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -88,8 +88,8 @@
             "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
             "lbName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
             "lbAddress": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]",
-            "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1])]",
-            "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0])]",
+            "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1]]",
+            "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0]]",
             "dnsServerName": "[parameters('sqlAlwaysOnValues').dnsServerName]",
             "adminCreds": {
               "userName": "[parameters('adminUsername')]",
