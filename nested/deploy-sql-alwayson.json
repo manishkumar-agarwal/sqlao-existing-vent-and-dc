@@ -59,55 +59,6 @@
           }
         }
       }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/CreateCluster')]",
-      "apiVersion": "2015-06-15",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/',parameters('sqlAlwaysOnValues').sqlServerVMNames[0],'/extensions/sqlAOPrepare')]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Powershell",
-        "type": "DSC",
-        "typeHandlerVersion": "2.17",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "wmfVersion": "5.0",
-          "modulesUrl": "[variables('createClusterModulesURL')]",
-          "configurationFunction": "[variables('createClusterConfigurationFunction')]",
-          "properties": {
-            "domainName": "[parameters('sqlAlwaysOnValues').domainName]",
-            "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
-            "sharePath": "[concat('\\\\',parameters('sqlAlwaysOnValues').sqlWitnessVMName,'\\',parameters('sqlAlwaysOnValues').sqlWitnessSharePath)]",
-            "nodes": "[parameters('sqlAlwaysOnValues').sqlServerVMNames]",
-            "sqlAlwaysOnEndpointName": "[concat(parameters('sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName,'-EndPoint')]",
-            "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName]",
-            "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnListenerName]",
-            "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
-            "lbName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
-            "lbAddress": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]",
-            "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1])]",
-            "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0])]",
-            "dnsServerName": "[parameters('sqlAlwaysOnValues').dnsServerName]",
-            "adminCreds": {
-              "userName": "[parameters('adminUsername')]",
-              "password": "PrivateSettingsRef:adminPassword"
-            },
-            "sqlServiceCreds": {
-              "userName": "[parameters('sqlAlwaysOnValues').sqlServerServiceAccountUserName]",
-              "password": "PrivateSettingsRef:sqlServerServiceAccountPassword"
-            }
-          }
-        },
-        "protectedSettings": {
-          "items": {
-            "adminPassword": "[parameters('adminPassword')]",
-            "sqlServerServiceAccountPassword": "[parameters('sqlAlwaysOnValues').sqlServerServiceAccountPassword]"
-          }
-        }
-      }
     }
   ],
   "outputs": {}
