@@ -181,7 +181,8 @@
         "[parameters('sqlServerVM1Name')]",
         "[parameters('sqlServerVM2Name')]"
       ],
-      "sqlVMSize": "[parameters('sqlVMSize')]"
+      "sqlVMSize": "[parameters('sqlVMSize')]",
+      "sqlAlwaysOnAvailabilityGroupName": "SQL-OP-AG"
     }
   },
   "resources": [

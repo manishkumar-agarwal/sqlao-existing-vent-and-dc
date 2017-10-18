@@ -5,9 +5,6 @@
     "sqlAlwaysOnValues": {
       "type": "secureObject"
     },
-    "namePrefix": {
-      "type": "string"
-    },
     "sqlLBName": {
       "type": "string"
     },
@@ -25,15 +22,6 @@
     },
     "adminPassword": {
       "type": "securestring"
-    },
-    "sqlAlwaysOnEndpointName": {
-      "type": "string"
-    },
-    "sqlAlwaysOnAvailabilityGroupName1": {
-      "type": "string"
-    },
-    "sqlAlwaysOnAvailabilityGroupListenerName1": {
-      "type": "string"
     },
     "_artifactsLocation": {
       "type": "string"
@@ -106,9 +94,9 @@
             "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
             "sharePath": "[concat('\\\\',parameters('sqlAlwaysOnValues').sqlWitnessVMName,'\\',parameters('sqlAlwaysOnValues').sqlWitnessSharePath)]",
             "nodes": "[parameters('sqlAlwaysOnValues').sqlServerVMNames]",
-            "sqlAlwaysOnEndpointName": "[parameters('sqlAlwaysOnEndpointName')]",
-            "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAlwaysOnAvailabilityGroupName1')]",
-            "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAlwaysOnAvailabilityGroupListenerName1')]",
+            "sqlAlwaysOnEndpointName": "[concat(parameters(''sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName,'-EndPoint')]",
+            "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName]",
+            "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnListenerName]",
             "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
             "lbName": "[parameters('sqlLBName')]",
             "lbAddress": "[parameters('sqlLBIPAddress')]",
