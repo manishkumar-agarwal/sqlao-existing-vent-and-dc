@@ -62,7 +62,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/CreateCluster')]",
+      "name": "[concat('manish-sqlvm2','/CreateCluster')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
