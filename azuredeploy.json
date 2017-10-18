@@ -209,12 +209,6 @@
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           },
-          "sqlServerServiceAccountUserName": {
-            "value": "[parameters('sqlServerServiceAccountUserName')]"
-          },
-          "sqlServerServiceAccountPassword": {
-            "value": "[parameters('sqlServerServiceAccountPassword')]"
-          },
           "_artifactsLocation": {
             "value": "[parameters('_artifactsLocation')]"
           },
