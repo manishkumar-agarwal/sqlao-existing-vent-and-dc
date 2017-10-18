@@ -82,7 +82,7 @@
             "clusterName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnClusterName]",
             "sharePath": "[concat('\\\\',parameters('sqlAlwaysOnValues').sqlWitnessVMName,'\\',parameters('sqlAlwaysOnValues').sqlWitnessSharePath)]",
             "nodes": "[parameters('sqlAlwaysOnValues').sqlServerVMNames]",
-            "sqlAlwaysOnEndpointName": "[concat(parameters(''sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName,'-EndPoint')]",
+            "sqlAlwaysOnEndpointName": "[concat(parameters('sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName,'-EndPoint')]",
             "sqlAlwaysOnAvailabilityGroupName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnAvailabilityGroupName]",
             "sqlAlwaysOnAvailabilityGroupListenerName": "[parameters('sqlAlwaysOnValues').sqlAlwaysOnListenerName]",
             "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
