@@ -176,15 +176,27 @@
       "sqlILBName": "[parameters('sqlILBName')]",
       "sqlWitnessVMName": "[parameters('sqlWitnessShareVMName')]",
       "sqlWitnessVMSize": "[parameters('sqlWitnessVMSize')]",
+      "sqlWitnessImageReference": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
+        "version": "latest"
+      },
       "sqlWitnessSharePath": "sqlao-fsw",
       "sqlServerVMNames": [
         "[parameters('sqlServerVM1Name')]",
         "[parameters('sqlServerVM2Name')]"
       ],
       "sqlVMSize": "[parameters('sqlVMSize')]",
+      "sqlServerImageReference": {
+        "publisher": "MicrosoftSQLServer",
+        "offer": "SQL2014SP2-WS2012R2",
+        "sku": "Enterprise",
+        "version": "latest"
+      },
       "sqlAlwaysOnAvailabilityGroupName": "SQL-OP-AG",
       "sqlServerServiceAccountUserName": "[parameters('sqlServerServiceAccountUserName')]",
-      "sqlServerServiceAccountPassword" : "[parameters('sqlServerServiceAccountPassword')]"
+      "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]"
     }
   },
   "resources": [

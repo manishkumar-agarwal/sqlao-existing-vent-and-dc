@@ -16,22 +16,6 @@
     },
     "_artifactsLocationSasToken": {
       "type": "string"
-    },
-    "windowsImagePublisher": {
-      "type": "string",
-      "defaultValue": "MicrosoftSQLServer"
-    },
-    "windowsImageOffer": {
-      "type": "string",
-      "defaultValue": "SQL2014SP2-WS2012R2"
-    },
-    "windowsImageSKU": {
-      "type": "string",
-      "defaultValue": "Enterprise"
-    },
-    "windowsImageVersion": {
-      "type": "string",
-      "defaultValue": "latest"
     }
   },
   "variables": {
@@ -201,7 +185,6 @@
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
       "properties": {
-        "licenseType": "Windows_Server",
         "hardwareProfile": {
           "vmSize": "[parameters('sqlAlwaysOnValues').sqlVMSize]"
         },
@@ -214,12 +197,7 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "[parameters('windowsImagePublisher')]",
-            "offer": "[parameters('windowsImageOffer')]",
-            "sku": "[parameters('windowsImageSKU')]",
-            "version": "[parameters('windowsImageVersion')]"
-          },
+          "imageReference": "[parameters('sqlAlwaysOnValues').sqlServerImageReference]",
           "osDisk": {
             "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-osdisk.vhd')]",
             "vhd": {
@@ -284,12 +262,7 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "[parameters('windowsImagePublisher')]",
-            "offer": "[parameters('windowsImageOffer')]",
-            "sku": "[parameters('windowsImageSKU')]",
-            "version": "[parameters('windowsImageVersion')]"
-          },
+          "imageReference": "[parameters('sqlAlwaysOnValues').sqlWitnessImageReference]",
           "osDisk": {
             "name": "[concat(variables('sqlWitnessVMName'), '-osdisk.vhd')]",
             "vhd": {
