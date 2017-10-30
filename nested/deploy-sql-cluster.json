@@ -48,12 +48,14 @@
       "name": "[parameters('sqlAlwaysOnValues').sqlAvailabilitySetName]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "properties": {}
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[concat(variables('sqlStorageAccountPrefix'), copyindex())]",
       "apiVersion": "2015-06-15",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "copy": {
         "name": "storageAccountLoop",
         "count": "[int(parameters('sqlAlwaysOnValues').sqlStorageAccountCount)]"
@@ -63,16 +65,17 @@
         "accountType": "[parameters('sqlAlwaysOnValues').storageAccountType]"
       }
     },
-		{
-			"apiVersion": "2015-06-15",
-			"name": "[variables('sqlLBName')]",
-			"type": "Microsoft.Network/loadBalancers",
-			"location": "[resourceGroup().location]",
-			"dependsOn": [],
-			"properties": {
-				"frontendIPConfigurations": [
-					{
-						"name": "[variables('lbFE1')]",
+    {
+      "apiVersion": "2015-06-15",
+      "name": "[variables('sqlLBName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
+      "dependsOn": [],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[variables('lbFE1')]",
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]",
@@ -80,50 +83,51 @@
                 "id": "[parameters('sqlAlwaysOnValues').lbSubnetUri]"
               }
             }
-					}
-				],
-				"backendAddressPools": [
-					{
-						"name": "[variables('lbBE')]"
-					}
-				],
-				"loadBalancingRules": [
-					{
-						"name": "[variables('sqlAOListener1')]",
-						"properties": {
-							"frontendIPConfiguration": {
-								"id": "[variables('sqlLBFEConfigID1')]"
-							},
-							"backendAddressPool": {
-								"id": "[variables('sqlLBBEAddressPoolID')]"
-							},
-							"probe": {
-								"id": "[variables('sqlLBProbeID1')]"
-							},
-							"protocol": "Tcp",
-							"frontendPort": 1433,
-							"backendPort": 1433,
-							"enableFloatingIP": true
-						}
-					}
-				],
-				"probes": [
-					{
-						"name": "[variables('sqlAOProbe1')]",
-						"properties": {
-							"protocol": "Tcp",
-							"port": 59999,
-							"intervalInSeconds": 5,
-							"numberOfProbes": 2
-						}
-					}
-				]
-			}
-		},
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('lbBE')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "[variables('sqlAOListener1')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('sqlLBFEConfigID1')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('sqlLBBEAddressPoolID')]"
+              },
+              "probe": {
+                "id": "[variables('sqlLBProbeID1')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 1433,
+              "backendPort": 1433,
+              "enableFloatingIP": true
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[variables('sqlAOProbe1')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 59999,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-nic')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "apiVersion": "2015-06-15",
       "copy": {
         "name": "nicLoop",
@@ -151,30 +155,32 @@
         ]
       }
     },
-		{
-			"name": "[concat(variables('sqlWitnessVMName'), '-nic')]",
-			"type": "Microsoft.Network/networkInterfaces",
-			"location": "[resourceGroup().location]",
-			"apiVersion": "2015-06-15",
-			"properties": {
-				"ipConfigurations": [
-					{
-						"name": "ipconfig1",
-						"properties": {
-							"privateIPAllocationMethod": "Dynamic",
+    {
+      "name": "[concat(variables('sqlWitnessVMName'), '-nic')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[parameters('sqlAlwaysOnValues').nicSubnetUri]"
               }
-						}
-					}
-				]
-			}
-		},
+            }
+          }
+        ]
+      }
+    },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[copyIndex()]]",
       "location": "[resourceGroup().location]",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "copy": {
         "name": "virtualMachineLoop",
         "count": "[length(parameters('sqlAlwaysOnValues').sqlServerVMNames)]"
@@ -238,11 +244,12 @@
         }
       }
     },
-		{
-			"apiVersion": "2015-06-15",
-			"type": "Microsoft.Compute/virtualMachines",
-			"name": "[variables('sqlWitnessVMName')]",
-			"location": "[resourceGroup().location]",
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('sqlWitnessVMName')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts',variables('sqlWitnessStorageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlWitnessVMName'), '-nic'))]",
@@ -292,7 +299,7 @@
           ]
         }
       }
-		},
+    },
 		{
 			"name": "[variables('deploySqlWitnessShare')]",
 			"type": "Microsoft.Resources/deployments",

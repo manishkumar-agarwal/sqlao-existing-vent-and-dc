@@ -196,7 +196,12 @@
       },
       "sqlAlwaysOnAvailabilityGroupName": "SQL-OP-AG",
       "sqlServerServiceAccountUserName": "[parameters('sqlServerServiceAccountUserName')]",
-      "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]"
+      "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]",
+      "tags": {
+        "LOB": "RSGNA",
+        "POC": "testemail@test1.com",
+        "Project": "OnePlace"
+      }
     }
   },
   "resources": [
