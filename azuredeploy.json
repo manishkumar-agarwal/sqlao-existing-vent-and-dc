@@ -159,7 +159,7 @@
   },
   "variables": {
     "sqlSubnetRef": "[concat(parameters('existingVirtualNetworkId'),'/subnets/',parameters('existingSqlSubnetName'))]",
-    "deploySqlClusterTemplateURL": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-cluster.json',parameters('_artifactsLocationSasToken'))]",
+    "deploySqlClusterTemplateURL": "[concat(parameters('_artifactsLocation'),'/nested/deploy-sql-cluster-managed-disks.json',parameters('_artifactsLocationSasToken'))]",
     "deploySqlCluster": "deploySqlCluster",
     "sqlAlwaysOnValues": {
       "domainName": "[parameters('existingDomainName')]",

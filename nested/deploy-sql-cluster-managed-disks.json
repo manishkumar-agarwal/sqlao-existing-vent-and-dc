@@ -20,7 +20,7 @@
   },
   "variables": {
     "apiVersionStorage": "2015-06-15",
-    "sqlDiskSize": 1000,
+    "sqlDiskSize": 1023,
     "sqlWitnessDiskSize": 128,
     "sqlLBName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
     "lbFE1": "[concat(variables('sqlLBName'),'-FrontEnd')]",
@@ -46,25 +46,31 @@
     {
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[parameters('sqlAlwaysOnValues').sqlAvailabilitySetName]",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
+      "sku": {
+        "name": "Aligned"
+      },
       "location": "[resourceGroup().location]",
       "tags": "[parameters('sqlAlwaysOnValues').tags]",
-      "properties": {}
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
     },
-    {
+    /*{
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[concat(variables('sqlStorageAccountPrefix'), copyindex())]",
       "apiVersion": "2015-06-15",
       "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "copy": {
         "name": "storageAccountLoop",
-        "count": "[int(parameters('sqlAlwaysOnValues').sqlStorageAccountCount)]"
+        "count": "[sub(int(parameters('sqlAlwaysOnValues').sqlStorageAccountCount),1)]"
       },
       "location": "[resourceGroup().location]",
       "properties": {
         "accountType": "[parameters('sqlAlwaysOnValues').storageAccountType]"
       }
-    },
+    },*/
     {
       "apiVersion": "2015-06-15",
       "name": "[variables('sqlLBName')]",
@@ -186,7 +192,7 @@
         "count": "[length(parameters('sqlAlwaysOnValues').sqlServerVMNames)]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",
+    /*    "[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",*/
         "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-nic'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
@@ -205,29 +211,29 @@
         "storageProfile": {
           "imageReference": "[parameters('sqlAlwaysOnValues').sqlServerImageReference]",
           "osDisk": {
-            "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-osdisk.vhd')]",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-osdisk.vhd')]"
+            "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-osdisk')]",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "vhd": {
-                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-datadisk1.vhd')]"
+              "managedDisk": {
+                "storageAccountType": "Standard_LRS"
               },
-              "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-datadisk1.vhd')]",
-              "caching": "None",
+              "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-datadisk1')]",
+              "caching": "ReadWrite",
               "createOption": "Empty",
               "diskSizeGB": "[variables('sqlDiskSize')]",
               "lun": 0
             },
             {
-              "vhd": {
-                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlStorageAccountPrefix'),copyIndex()),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-logdisk1.vhd')]"
+              "managedDisk": {
+                "storageAccountType": "Standard_LRS"
               },
-              "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-logdisk1.vhd')]",
+              "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-logdisk1')]",
               "caching": "None",
               "createOption": "Empty",
               "diskSizeGB": "[variables('sqlDiskSize')]",
@@ -251,7 +257,7 @@
       "location": "[resourceGroup().location]",
       "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts',variables('sqlWitnessStorageAccountName'))]",
+      /*  "[resourceId('Microsoft.Storage/storageAccounts',variables('sqlWitnessStorageAccountName'))]",*/
         "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlWitnessVMName'), '-nic'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
@@ -271,20 +277,20 @@
         "storageProfile": {
           "imageReference": "[parameters('sqlAlwaysOnValues').sqlWitnessImageReference]",
           "osDisk": {
-            "name": "[concat(variables('sqlWitnessVMName'), '-osdisk.vhd')]",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlWitnessStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', variables('sqlWitnessVMName'), '-osdisk.vhd')]"
+            "name": "[concat(variables('sqlWitnessVMName'), '-osdisk')]",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "vhd": {
-                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('sqlWitnessStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob, variables('vmContainerName'), '/', variables('sqlWitnessVMName'), '-datadisk1.vhd')]"
+              "managedDisk": {
+                "storageAccountType": "Standard_LRS"
               },
-              "name": "[concat(variables('sqlWitnessVMName'), '-datadisk1.vhd')]",
-              "caching": "None",
+              "name": "[concat(variables('sqlWitnessVMName'), '-datadisk1')]",
+              "caching": "ReadWrite",
               "createOption": "Empty",
               "diskSizeGB": "[variables('sqlWitnessDiskSize')]",
               "lun": 0
