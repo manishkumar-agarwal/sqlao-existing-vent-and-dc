@@ -190,8 +190,8 @@
         },
         "osProfile": {
           "computerName": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()]]",
-          "adminUsername": "[parameters('sqlAlwaysOnValues').localAdminUsername]",
-          "adminPassword": "[parameters('sqlAlwaysOnValues').localAdminPassword]"
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": "[parameters('sqlAlwaysOnValues').sqlServerImageReference]",
@@ -255,8 +255,8 @@
         },
         "osProfile": {
           "computerName": "[variables('sqlWitnessVMName')]",
-          "adminUsername": "[parameters('sqlAlwaysOnValues').localAdminUsername]",
-          "adminPassword": "[parameters('sqlAlwaysOnValues').localAdminPassword]"
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": "[parameters('sqlAlwaysOnValues').sqlWitnessImageReference]",
