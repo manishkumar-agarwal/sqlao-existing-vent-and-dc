@@ -63,6 +63,18 @@
       },
       "defaultValue": "Standard_DS1_V2"
     },
+    "localAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the local Administrator of the Virtual Machines"
+      }
+    },
+    "localAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the local Administrator account of the Virtual Machines"
+      }
+    },
     "existingDomainName": {
       "type": "string",
       "metadata": {
@@ -197,6 +209,8 @@
       "sqlAlwaysOnAvailabilityGroupName": "SQL-OP-AG",
       "sqlServerServiceAccountUserName": "[parameters('sqlServerServiceAccountUserName')]",
       "sqlServerServiceAccountPassword": "[parameters('sqlServerServiceAccountPassword')]",
+      "localAdminUsername": "[parameters('localAdminUsername')]",
+      "localAdminPassword": "[parameters('localAdminPassword')]",
       "tags": {
         "LOB": "RSGNA",
         "POC": "testemail@test1.com",

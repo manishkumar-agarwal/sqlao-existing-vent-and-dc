@@ -57,20 +57,6 @@
         "platformFaultDomainCount": 2
       }
     },
-    /*{
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[concat(variables('sqlStorageAccountPrefix'), copyindex())]",
-      "apiVersion": "2015-06-15",
-      "tags": "[parameters('sqlAlwaysOnValues').tags]",
-      "copy": {
-        "name": "storageAccountLoop",
-        "count": "[sub(int(parameters('sqlAlwaysOnValues').sqlStorageAccountCount),1)]"
-      },
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "accountType": "[parameters('sqlAlwaysOnValues').storageAccountType]"
-      }
-    },*/
     {
       "apiVersion": "2015-06-15",
       "name": "[variables('sqlLBName')]",
@@ -192,7 +178,6 @@
         "count": "[length(parameters('sqlAlwaysOnValues').sqlServerVMNames)]"
       },
       "dependsOn": [
-        /*    "[resourceId('Microsoft.Storage/storageAccounts',concat(variables('sqlStorageAccountPrefix'),  copyindex()))]",*/
         "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()], '-nic'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
@@ -205,8 +190,8 @@
         },
         "osProfile": {
           "computerName": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[copyindex()]]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminUsername": "[parameters('sqlAlwaysOnValues').localAdminUsername]",
+          "adminPassword": "[parameters('sqlAlwaysOnValues').localAdminPassword]"
         },
         "storageProfile": {
           "imageReference": "[parameters('sqlAlwaysOnValues').sqlServerImageReference]",
@@ -257,7 +242,6 @@
       "location": "[resourceGroup().location]",
       "tags": "[parameters('sqlAlwaysOnValues').tags]",
       "dependsOn": [
-        /*  "[resourceId('Microsoft.Storage/storageAccounts',variables('sqlWitnessStorageAccountName'))]",*/
         "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sqlWitnessVMName'), '-nic'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('sqlAlwaysOnValues').sqlAvailabilitySetName)]"
       ],
@@ -271,8 +255,8 @@
         },
         "osProfile": {
           "computerName": "[variables('sqlWitnessVMName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminUsername": "[parameters('sqlAlwaysOnValues').localAdminUsername]",
+          "adminPassword": "[parameters('sqlAlwaysOnValues').localAdminPassword]"
         },
         "storageProfile": {
           "imageReference": "[parameters('sqlAlwaysOnValues').sqlWitnessImageReference]",
