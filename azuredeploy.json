@@ -25,7 +25,7 @@
     },
     "sqlAvailabilitySetName": {
       "type": "string",
-      "maxLength": 15,
+      "maxLength": 40,
       "metadata": {
         "description": "Name for the SQL Always On Availability Set name, lowercase alphanumeric"
       }
