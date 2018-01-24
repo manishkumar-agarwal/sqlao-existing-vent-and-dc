@@ -27,7 +27,7 @@
   "resources": [
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[0],'/sqlAOPrepare')]",
+      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/sqlAOPrepare')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [],
@@ -62,11 +62,11 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/CreateCluster')]",
+      "name": "[concat(parameters('sqlAlwaysOnValues').sqlServerVMNames[0],'/CreateCluster')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/',parameters('sqlAlwaysOnValues').sqlServerVMNames[0],'/extensions/sqlAOPrepare')]"
+        "[concat('Microsoft.Compute/virtualMachines/',parameters('sqlAlwaysOnValues').sqlServerVMNames[1],'/extensions/sqlAOPrepare')]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
@@ -88,8 +88,8 @@
             "sqlAlwaysOnAvailabilityGroupListenerPort": 1433,
             "lbName": "[parameters('sqlAlwaysOnValues').sqlILBName]",
             "lbAddress": "[parameters('sqlAlwaysOnValues').sqlLBIPAddress]",
-            "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1]]",
-            "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0]]",
+            "primaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[0]]",
+            "secondaryReplica": "[parameters('sqlAlwaysOnValues').sqlServerVMNames[1]]",
             "dnsServerName": "[parameters('sqlAlwaysOnValues').dnsServerName]",
             "adminCreds": {
               "userName": "[parameters('adminUsername')]",
